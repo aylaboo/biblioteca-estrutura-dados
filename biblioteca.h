@@ -45,3 +45,7 @@ typedef struct {
 
 void lerTexto(const char *mensagem, char *destino, int tamanho);
 int lerInteiro(const char *mensagem);
+Biblioteca *criarBiblioteca(void);
+void cadastrarLivro(Biblioteca *b);
+void exibirLivro(const Livro *l);
+void listarLivros(const Biblioteca *b);
