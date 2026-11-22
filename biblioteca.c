@@ -218,7 +218,7 @@ void consultarEmprestimos(const Biblioteca *b) {
     char email[TAM_EMAIL];
     lerTexto("Email do usuário: ", email, TAM_EMAIL);
 
-    if (buscarUsuarioPorEmail(b, email) == NULL) {
+    if (buscarUsuarioEmail(b, email) == NULL) {
         printf("Usuário não cadastrado.\n");
         return;
     }
