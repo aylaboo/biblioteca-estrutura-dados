@@ -358,3 +358,51 @@ void excluirUsuario(Biblioteca *b) {
     free(atual);
     printf("Usuário excluído.\n");
 }
+
+time_t agoraSimulado(const Biblioteca *b) {
+    return time(NULL) + (time_t)b->diasSimulados * SEGUNDOS_DIA;
+}
+
+void emprestarLivro(Biblioteca *b) {
+    int id = lerInteiro("Código do livro a emprestar: ");
+    Livro *l = buscarLivroID(b, id);
+    if (l == NULL) {
+        printf("Livro não encontrado.\n");
+        return;
+    }
+    if (l->status == EMPRESTADO) {
+        printf("O livro já está emprestado.\n");
+        return;
+    }
+
+    char email[TAM_EMAIL];
+    lerTexto("Email do usuário: ", email, TAM_EMAIL);
+    if (buscarUsuarioEmail(b, email) == NULL) {
+        printf("Usuário não cadastrado. Empréstimo cancelado.\n");
+        return;
+    }
+
+    l->status = EMPRESTADO;
+    strcpy(l->emailEmprestimo, email);
+    l->dataEmprestimo = agoraSimulado(b);
+    l->qtdEmprestimos++;
+    printf("Livro \"%s\" emprestado para %s.\n", l->titulo, email);
+}
+
+void devolverLivro(Biblioteca *b) {
+    int id = lerInteiro("Código do livro a devolver: ");
+    Livro *l = buscarLivroID(b, id);
+    if (l == NULL) {
+        printf("Livro não encontrado.\n");
+        return;
+    }
+    if (l->status == DISPONIVEL) {
+        printf("O livro não estava emprestado.\n");
+        return;
+    }
+
+    l->status = DISPONIVEL;
+    l->emailEmprestimo[0] = '\0';
+    l->dataEmprestimo = 0;
+    printf("Livro \"%s\" devolvido.\n", l->titulo);
+}

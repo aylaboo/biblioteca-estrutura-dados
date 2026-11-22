@@ -65,3 +65,6 @@ void atualizarUsuario(Biblioteca *b);
 void excluirLivro(Biblioteca *b);
 void excluirUsuario(Biblioteca *b);
 int usuarioTemLivros(const Biblioteca *b, const char *email);
+void emprestarLivro(Biblioteca *b);
+void devolverLivro(Biblioteca *b);
+time_t agoraSimulado(const Biblioteca *b) 
