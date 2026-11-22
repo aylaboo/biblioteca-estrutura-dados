@@ -150,3 +150,87 @@ void listarUsuarios(const Biblioteca *b) {
         exibirUsuario(u);
     }
 }
+
+Livro *buscarLivroID(const Biblioteca *b, int id) {
+    for (Livro *l = b->livros; l != NULL && l->id <= id; l = l->prox) {
+        if (l->id == id) {
+            return l;
+        }
+    }
+    return NULL;
+}
+
+void consultarLivroID(const Biblioteca *b) {
+    int id = lerInteiro("Código do livro: ");
+    Livro *l = buscarLivroID(b, id);
+    if (l == NULL) {
+        printf("Livro não encontrado.\n");
+        return;
+    }
+    exibirLivro(l);
+}
+
+void consultarLivrosAutor(const Biblioteca *b) {
+    char autor[TAM_TEXTO];
+    lerTexto("Autor: ", autor, TAM_TEXTO);
+
+    int encontrados = 0;
+    for (const Livro *l = b->livros; l != NULL; l = l->prox) {
+        if (strcmp(l->autor, autor) == 0) {
+            exibirLivro(l);
+            encontrados++;
+        }
+    }
+    if (encontrados == 0) {
+        printf("Livro não encontrado.\n");
+    }
+}
+
+void consultarUsuarioEmail(const Biblioteca *b) {
+    char email[TAM_EMAIL];
+    lerTexto("Email: ", email, TAM_EMAIL);
+
+    Usuario *u = buscarUsuarioEmail(b, email);
+    if (u == NULL) {
+        printf("Usuário não cadastrado.\n");
+        return;
+    }
+    exibirUsuario(u);
+}
+
+void consultarUsuariosNome(const Biblioteca *b) {
+    char nome[TAM_TEXTO];
+    lerTexto("Nome: ", nome, TAM_TEXTO);
+
+    int encontrados = 0;
+    for (const Usuario *u = b->usuarios; u != NULL; u = u->prox) {
+        if (strcmp(u->nome, nome) == 0) {
+            exibirUsuario(u);
+            encontrados++;
+        }
+    }
+    if (encontrados == 0) {
+        printf("Usuário não cadastrado.\n");
+    }
+}
+
+void consultarEmprestimos(const Biblioteca *b) {
+    char email[TAM_EMAIL];
+    lerTexto("Email do usuário: ", email, TAM_EMAIL);
+
+    if (buscarUsuarioPorEmail(b, email) == NULL) {
+        printf("Usuário não cadastrado.\n");
+        return;
+    }
+
+    int encontrados = 0;
+    for (const Livro *l = b->livros; l != NULL; l = l->prox) {
+        if (l->status == EMPRESTADO && strcmp(l->emailEmprestimo, email) == 0) {
+            exibirLivro(l);
+            encontrados++;
+        }
+    }
+    if (encontrados == 0) {
+        printf("O usuário não possui livros emprestados.\n");
+    }
+}
