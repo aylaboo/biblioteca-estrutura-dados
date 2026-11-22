@@ -49,3 +49,7 @@ Biblioteca *criarBiblioteca(void);
 void cadastrarLivro(Biblioteca *b);
 void exibirLivro(const Livro *l);
 void listarLivros(const Biblioteca *b);
+Usuario *buscarUsuarioEmail(const Biblioteca *b, const char *email);
+void cadastrarUsuario(Biblioteca *b);
+void exibirUsuario(const Usuario *u);
+void listarUsuarios(const Biblioteca *b);
