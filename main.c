@@ -5,12 +5,17 @@ int main() {
     Biblioteca *b = criarBiblioteca();
     cadastrarLivro(b);
     cadastrarLivro(b);
+    cadastrarLivro(b);
     cadastrarUsuario(b);
 
-    consultarLivroID(b);
-    consultarLivrosAutor(b);
-    consultarUsuarioEmail(b);
-    consultarUsuariosNome(b);
-    consultarEmprestimos(b);
+    atualizarLivro(b);
+    atualizarUsuario(b);
+    listarLivros(b);
+    listarUsuarios(b);
+
+    excluirLivro(b);
+    excluirUsuario(b);
+    listarLivros(b);
+    listarUsuarios(b);
     return 0;
 }

@@ -46,6 +46,7 @@ typedef struct {
 void lerTexto(const char *mensagem, char *destino, int tamanho);
 int lerInteiro(const char *mensagem);
 Biblioteca *criarBiblioteca(void);
+void inserirLivroOrdenado(Biblioteca *b, Livro *novo);
 void cadastrarLivro(Biblioteca *b);
 void exibirLivro(const Livro *l);
 void listarLivros(const Biblioteca *b);
@@ -59,3 +60,8 @@ void consultarLivrosAutor(const Biblioteca *b);
 void consultarUsuarioEmail(const Biblioteca *b);
 void consultarUsuariosNome(const Biblioteca *b);
 void consultarEmprestimos(const Biblioteca *b);
+void atualizarLivro(Biblioteca *b);
+void atualizarUsuario(Biblioteca *b);
+void excluirLivro(Biblioteca *b);
+void excluirUsuario(Biblioteca *b);
+int usuarioTemLivros(const Biblioteca *b, const char *email);
