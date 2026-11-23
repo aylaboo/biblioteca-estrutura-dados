@@ -20,6 +20,18 @@ int lerInteiro(const char *mensagem) {
     return atoi(inteiro);
 }
 
+int lerOpcao(const char *mensagem) {
+    char opt[32];
+    char *fim;
+
+    lerTexto(mensagem, opt, sizeof(opt));
+    long valor = strtol(opt, &fim, 10);
+    if (fim == opt || *fim != '\0') {
+        return -1;
+    }
+    return (int)valor;
+}
+
 //exit(1) invés de return 1 pois o exit encerra o programa inteiro imediatamente, e o return só sairia da função
 Biblioteca *criarBiblioteca(void) {
     Biblioteca *b = malloc(sizeof(Biblioteca));
@@ -405,4 +417,22 @@ void devolverLivro(Biblioteca *b) {
     l->emailEmprestimo[0] = '\0';
     l->dataEmprestimo = 0;
     printf("Livro \"%s\" devolvido.\n", l->titulo);
+}
+
+void liberarBiblioteca(Biblioteca *b) {
+    Livro *l = b->livros;
+    while (l != NULL) {
+        Livro *proximo = l->prox;
+        free(l);
+        l = proximo;
+    }
+
+    Usuario *u = b->usuarios;
+    while (u != NULL) {
+        Usuario *proximo = u->prox;
+        free(u);
+        u = proximo;
+    }
+
+    free(b);
 }
