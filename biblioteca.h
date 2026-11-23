@@ -31,6 +31,7 @@ typedef struct Livro {
 
 typedef struct NoId {
     int id;
+    Livro *livro;
     struct NoId *esq;
     struct NoId *dir;
 } NoId;
@@ -70,3 +71,9 @@ void devolverLivro(Biblioteca *b);
 time_t agoraSimulado(const Biblioteca *b);
 int lerOpcao(const char *mensagem);
 void liberarBiblioteca(Biblioteca *b);
+NoId *inserirId(NoId *raiz, int id, Livro *livro);
+int idExiste(const NoId *raiz, int id);
+NoId *minimoId(NoId *no);
+NoId *removerId(NoId *raiz, int id);
+void liberarArvore(NoId *raiz);
+NoId *buscarNoId(NoId *raiz, int id);

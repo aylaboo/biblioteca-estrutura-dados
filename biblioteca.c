@@ -84,7 +84,7 @@ void cadastrarLivro(Biblioteca *b) {
     novo->dataEmprestimo = 0;
     novo->qtdEmprestimos = 0;
     novo->prox = NULL;
-
+    b->raizIds = inserirId(b->raizIds, novo->id, novo);
     inserirLivroOrdenado(b, novo);
     printf("Livro cadastrado com o código %d.\n", novo->id);
 }
@@ -162,13 +162,13 @@ void listarUsuarios(const Biblioteca *b) {
 }
 
 Livro *buscarLivroID(const Biblioteca *b, int id) {
-    for (Livro *l = b->livros; l != NULL && l->id <= id; l = l->prox) {
-        if (l->id == id) {
-            return l;
-        }
+    NoId *no = buscarNoId(b->raizIds, id);
+    if (no == NULL) {
+        return NULL;
     }
-    return NULL;
+    return no->livro;
 }
+
 
 void consultarLivroID(const Biblioteca *b) {
     int id = lerInteiro("Código do livro: ");
@@ -330,7 +330,7 @@ void excluirLivro(Biblioteca *b) {
         printf("O livro está emprestado e não pode ser excluído.\n");
         return;
     }
-
+    b->raizIds = removerId(b->raizIds, id);
     // primeiro da lista
     if (anterior == NULL) {
         b->livros = atual->prox;
@@ -433,6 +433,92 @@ void liberarBiblioteca(Biblioteca *b) {
         free(u);
         u = proximo;
     }
-
+    liberarArvore(b->raizIds);
     free(b);
+}
+
+NoId *inserirId(NoId *raiz, int id, Livro *livro) {
+ if (raiz == NULL) {
+        NoId *novo = malloc(sizeof(NoId));
+        if (novo == NULL) {
+            printf("Erro: sem memória.\n");
+            return NULL;
+        }
+        novo->id = id;
+        novo->livro = livro;
+        novo->esq = NULL;
+        novo->dir = NULL;
+        return novo;
+    }
+    if (id < raiz->id) {
+        raiz->esq = inserirId(raiz->esq, id, livro);
+    } else if (id > raiz->id) {
+        raiz->dir = inserirId(raiz->dir, id, livro);
+    }
+    return raiz;
+}
+
+int idExiste(const NoId *raiz, int id) {
+    if (raiz == NULL) {
+        return 0;
+    }
+    if (id == raiz->id) {
+        return 1;
+    }
+    if (id < raiz->id) {
+        return idExiste(raiz->esq, id);
+    }
+    return idExiste(raiz->dir, id);
+}
+NoId *buscarNoId(NoId *raiz, int id) {
+    while (raiz != NULL && raiz->id != id) {
+        raiz = (id < raiz->id) ? raiz->esq : raiz->dir;
+    }
+    return raiz;
+}
+
+ NoId *minimoId(NoId *no) {
+    while (no->esq != NULL) {
+        no = no->esq;
+    }
+    return no;
+}
+
+NoId *removerId(NoId *raiz, int id) {
+    if (raiz == NULL) {
+        return NULL;
+    }
+    if (id < raiz->id) {
+        raiz->esq = removerId(raiz->esq, id);
+    } else if (id > raiz->id) {
+        raiz->dir = removerId(raiz->dir, id);
+    } else {
+        //só o filho da direita
+        if (raiz->esq == NULL) {
+            NoId *filho = raiz->dir;
+            free(raiz);
+            return filho;
+        }
+        //só o filho da esquerda
+        if (raiz->dir == NULL) {
+            NoId *filho = raiz->esq;
+            free(raiz);
+            return filho;
+        }
+        // dois filhos: troca pelo menor da subárvore direita
+        NoId *sucessor = minimoId(raiz->dir);
+        raiz->id = sucessor->id;
+        raiz->livro = sucessor->livro;
+        raiz->dir = removerId(raiz->dir, sucessor->id);
+    }
+    return raiz;
+}
+
+void liberarArvore(NoId *raiz) {
+    if (raiz == NULL) {
+        return;
+    }
+    liberarArvore(raiz->esq);
+    liberarArvore(raiz->dir);
+    free(raiz);
 }
