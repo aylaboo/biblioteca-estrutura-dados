@@ -93,7 +93,7 @@ int main(void) {
     do {
         printf("\n=== Biblioteca ===\n");
         printf("1. Cadastro\n2. Consulta\n3. Atualização\n4. Exclusão\n");
-        printf("5. Empréstimo\n6. Devolução\n0. Sair\n");
+        printf("5. Empréstimo\n6. Devolução\n7. Estatísticas\n0. Sair\n");
         opcao = lerOpcao("Opção: ");
         switch (opcao) {
             case 1: menuCadastro(b); break;
@@ -102,6 +102,7 @@ int main(void) {
             case 4: menuExclusao(b); break;
             case 5: emprestarLivro(b); break;
             case 6: devolverLivro(b); break;
+            case 7: exibirEstatisticas(b); break;
             case 0: break;
             default: printf("Opção inválida.\n");
         }

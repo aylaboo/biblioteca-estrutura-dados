@@ -1,15 +1,10 @@
 #define BIBLIOTECA_H
 
-#include <time.h>
-
 #define TAM_TEXTO 100
 #define TAM_EMAIL 60
 
 #define DISPONIVEL 0
 #define EMPRESTADO 1
-
-#define PRAZO_DIAS 7
-#define SEGUNDOS_DIA 86400
 
 typedef struct Usuario {
     char email[TAM_EMAIL];
@@ -24,7 +19,6 @@ typedef struct Livro {
     int ano;
     int status;
     char emailEmprestimo[TAM_EMAIL];
-    time_t dataEmprestimo;
     int qtdEmprestimos;
     struct Livro *prox;
 } Livro;
@@ -41,7 +35,6 @@ typedef struct {
     Usuario *usuarios;
     NoId *raizIds;
     int proximoId;
-    int diasSimulados;
 } Biblioteca;
 
 void lerTexto(const char *mensagem, char *destino, int tamanho);
@@ -68,7 +61,6 @@ void excluirUsuario(Biblioteca *b);
 int usuarioTemLivros(const Biblioteca *b, const char *email);
 void emprestarLivro(Biblioteca *b);
 void devolverLivro(Biblioteca *b);
-time_t agoraSimulado(const Biblioteca *b);
 int lerOpcao(const char *mensagem);
 void liberarBiblioteca(Biblioteca *b);
 NoId *inserirId(NoId *raiz, int id, Livro *livro);
@@ -77,3 +69,8 @@ NoId *minimoId(NoId *no);
 NoId *removerId(NoId *raiz, int id);
 void liberarArvore(NoId *raiz);
 NoId *buscarNoId(NoId *raiz, int id);
+void exibirEstatisticas(const Biblioteca *b);
+int contarEmprestimosAtivos(const Biblioteca *b, const char *email);
+void livroMaisEmprestado(const Biblioteca *b);
+void usuarioMaisEmprestimos(const Biblioteca *b);
+void exibirEstatisticas(const Biblioteca *b);

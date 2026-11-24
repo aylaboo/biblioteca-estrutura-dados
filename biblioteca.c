@@ -43,7 +43,6 @@ Biblioteca *criarBiblioteca(void) {
     b->usuarios = NULL;
     b->raizIds = NULL;
     b->proximoId = 1;
-    b->diasSimulados = 0;
     return b;
 }
 
@@ -81,7 +80,6 @@ void cadastrarLivro(Biblioteca *b) {
     novo->id = b->proximoId++;
     novo->status = DISPONIVEL;
     novo->emailEmprestimo[0] = '\0';
-    novo->dataEmprestimo = 0;
     novo->qtdEmprestimos = 0;
     novo->prox = NULL;
     b->raizIds = inserirId(b->raizIds, novo->id, novo);
@@ -371,10 +369,6 @@ void excluirUsuario(Biblioteca *b) {
     printf("Usuário excluído.\n");
 }
 
-time_t agoraSimulado(const Biblioteca *b) {
-    return time(NULL) + (time_t)b->diasSimulados * SEGUNDOS_DIA;
-}
-
 void emprestarLivro(Biblioteca *b) {
     int id = lerInteiro("Código do livro a emprestar: ");
     Livro *l = buscarLivroID(b, id);
@@ -396,7 +390,6 @@ void emprestarLivro(Biblioteca *b) {
 
     l->status = EMPRESTADO;
     strcpy(l->emailEmprestimo, email);
-    l->dataEmprestimo = agoraSimulado(b);
     l->qtdEmprestimos++;
     printf("Livro \"%s\" emprestado para %s.\n", l->titulo, email);
 }
@@ -415,8 +408,59 @@ void devolverLivro(Biblioteca *b) {
 
     l->status = DISPONIVEL;
     l->emailEmprestimo[0] = '\0';
-    l->dataEmprestimo = 0;
     printf("Livro \"%s\" devolvido.\n", l->titulo);
+}
+
+int contarEmprestimosAtivos(const Biblioteca *b, const char *email) {
+    int total = 0;
+    for (const Livro *l = b->livros; l != NULL; l = l->prox) {
+        if (l->status == EMPRESTADO && strcmp(l->emailEmprestimo, email) == 0) {
+            total++;
+        }
+    }
+    return total;
+}
+
+void livroMaisEmprestado(const Biblioteca *b) {
+    const Livro *maior = NULL;
+    for (const Livro *l = b->livros; l != NULL; l = l->prox) {
+        if (l->qtdEmprestimos > 0 &&
+            (maior == NULL || l->qtdEmprestimos > maior->qtdEmprestimos)) {
+            maior = l;
+        }
+    }
+
+    if (maior == NULL) {
+        printf("Livro mais emprestado: nenhum empréstimo foi realizado ainda.\n");
+        return;
+    }
+    printf("Livro mais emprestado (%d vezes): ", maior->qtdEmprestimos);
+    exibirLivro(maior);
+}
+
+void usuarioMaisEmprestimos(const Biblioteca *b) {
+    const Usuario *melhor = NULL;
+    int maior = 0;
+    for (const Usuario *u = b->usuarios; u != NULL; u = u->prox) {
+        int qtd = contarEmprestimosAtivos(b, u->email);
+        if (qtd > maior) {
+            maior = qtd;
+            melhor = u;
+        }
+    }
+
+    if (melhor == NULL) {
+        printf("Usuário com mais empréstimos ativos: nenhum usuário com livros emprestados.\n");
+        return;
+    }
+    printf("Usuário com mais empréstimos ativos (%d): ", maior);
+    exibirUsuario(melhor);
+}
+
+void exibirEstatisticas(const Biblioteca *b) {
+    printf("\n--- Estatísticas ---\n");
+    livroMaisEmprestado(b);
+    usuarioMaisEmprestimos(b);
 }
 
 void liberarBiblioteca(Biblioteca *b) {
