@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "biblioteca.h"
+#include <stdlib.h>
+#include <time.h>
 
 void menuCadastro(Biblioteca *b) {
     int opcao;
@@ -87,6 +89,7 @@ void menuExclusao(Biblioteca *b) {
 }
 
 int main(void) {
+    srand((unsigned)time(NULL));
     Biblioteca *b = criarBiblioteca();
     int opcao;
 

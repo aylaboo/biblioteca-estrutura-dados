@@ -42,7 +42,7 @@ Biblioteca *criarBiblioteca(void) {
     b->livros = NULL;
     b->usuarios = NULL;
     b->raizIds = NULL;
-    b->proximoId = 1;
+    b->qtdLivros = 0;
     return b;
 }
 
@@ -61,7 +61,19 @@ void inserirLivroOrdenado(Biblioteca *b, Livro *novo) {
     atual->prox = novo;
 }
 
+int gerarIdUnico(const Biblioteca *b) {
+    int id;
+    do {
+        id = rand() % MAX_ID + 1;
+    } while (idExiste(b->raizIds, id));
+    return id;
+}
+
 void cadastrarLivro(Biblioteca *b) {
+    if (b->qtdLivros >= MAX_ID) {
+        printf("Limite de %d livros atingido.\n", MAX_ID);
+        return;
+    }
     Livro *novo = malloc(sizeof(Livro));
     if (novo == NULL) {
         printf("Erro: sem memória.\n");
@@ -77,18 +89,19 @@ void cadastrarLivro(Biblioteca *b) {
     }
     novo->ano = lerInteiro("Ano de publicação: ");
 
-    novo->id = b->proximoId++;
+    novo->id = gerarIdUnico(b);
     novo->status = DISPONIVEL;
     novo->emailEmprestimo[0] = '\0';
     novo->qtdEmprestimos = 0;
     novo->prox = NULL;
     b->raizIds = inserirId(b->raizIds, novo->id, novo);
+    b->qtdLivros++;
     inserirLivroOrdenado(b, novo);
     printf("Livro cadastrado com o código %d.\n", novo->id);
 }
 
 void exibirLivro(const Livro *l) {
-    printf("[%d] %s | %s | %d | %s", l->id, l->titulo, l->autor, l->ano,
+    printf("[%03d] %s | %s | %d | %s", l->id, l->titulo, l->autor, l->ano,
            l->status == DISPONIVEL ? "Disponível" : "Emprestado");
     if (l->status == EMPRESTADO) {
         printf(" para %s", l->emailEmprestimo);
@@ -329,6 +342,7 @@ void excluirLivro(Biblioteca *b) {
         return;
     }
     b->raizIds = removerId(b->raizIds, id);
+    b->qtdLivros--;
     // primeiro da lista
     if (anterior == NULL) {
         b->livros = atual->prox;

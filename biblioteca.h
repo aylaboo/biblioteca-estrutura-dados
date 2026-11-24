@@ -1,10 +1,9 @@
 #define BIBLIOTECA_H
-
 #define TAM_TEXTO 100
 #define TAM_EMAIL 60
-
 #define DISPONIVEL 0
 #define EMPRESTADO 1
+#define MAX_ID 999
 
 typedef struct Usuario {
     char email[TAM_EMAIL];
@@ -34,7 +33,7 @@ typedef struct {
     Livro *livros;
     Usuario *usuarios;
     NoId *raizIds;
-    int proximoId;
+    int qtdLivros;
 } Biblioteca;
 
 void lerTexto(const char *mensagem, char *destino, int tamanho);
@@ -74,3 +73,4 @@ int contarEmprestimosAtivos(const Biblioteca *b, const char *email);
 void livroMaisEmprestado(const Biblioteca *b);
 void usuarioMaisEmprestimos(const Biblioteca *b);
 void exibirEstatisticas(const Biblioteca *b);
+int gerarIdUnico(const Biblioteca *b);
