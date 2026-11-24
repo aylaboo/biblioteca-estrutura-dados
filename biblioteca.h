@@ -1,3 +1,4 @@
+#ifndef BIBLIOTECA_H
 #define BIBLIOTECA_H
 #define TAM_TEXTO 100
 #define TAM_EMAIL 60
@@ -72,5 +73,6 @@ void exibirEstatisticas(const Biblioteca *b);
 int contarEmprestimosAtivos(const Biblioteca *b, const char *email);
 void livroMaisEmprestado(const Biblioteca *b);
 void usuarioMaisEmprestimos(const Biblioteca *b);
-void exibirEstatisticas(const Biblioteca *b);
 int gerarIdUnico(const Biblioteca *b);
+void listarEmprestimos(const Biblioteca *b);
+#endif

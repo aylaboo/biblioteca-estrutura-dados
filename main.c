@@ -19,28 +19,44 @@ void menuCadastro(Biblioteca *b) {
 }
 
  void menuConsultaLivros(Biblioteca *b) {
-    printf("\n1. Por código\n2. Por autor\n");
+    printf("\n1. Por código\n2. Por autor\n3. Todos os livros\n");
     int opcao = lerOpcao("Opção: ");
     if (opcao == 1) {
         consultarLivroID(b);
     } else if (opcao == 2) {
         consultarLivrosAutor(b);
+    } else if (opcao == 3) {
+        listarLivros(b);
     } else {
         printf("Opção inválida.\n");
     }
 }
 
  void menuConsultaUsuarios(Biblioteca *b) {
-    printf("\n1. Por email\n2. Por nome\n");
+   printf("\n1. Por email\n2. Por nome\n3. Todos os usuários\n");
     int opcao = lerOpcao("Opção: ");
     if (opcao == 1) {
         consultarUsuarioEmail(b);
     } else if (opcao == 2) {
         consultarUsuariosNome(b);
+    } else if (opcao == 3) {
+        listarUsuarios(b);
     } else {
         printf("Opção inválida.\n");
     }
 }
+void menuConsultaEmprestimos(Biblioteca *b) {
+    printf("\n1. De um usuário\n2. Todos os empréstimos\n");
+    int opcao = lerOpcao("Opção: ");
+    if (opcao == 1) {
+        consultarEmprestimos(b);
+    } else if (opcao == 2) {
+        listarEmprestimos(b);
+    } else {
+        printf("Opção inválida.\n");
+    }
+}
+
 
 void menuConsulta(Biblioteca *b) {
     int opcao;
@@ -51,7 +67,7 @@ void menuConsulta(Biblioteca *b) {
         switch (opcao) {
             case 1: menuConsultaLivros(b); break;
             case 2: menuConsultaUsuarios(b); break;
-            case 3: consultarEmprestimos(b); break;
+            case 3: menuConsultaEmprestimos(b); break;
             case 0: break;
             default: printf("Opção inválida.\n");
         }

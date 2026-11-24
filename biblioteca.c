@@ -3,6 +3,8 @@
 #include <string.h>
 #include "biblioteca.h"
 
+//As três funções a seguir foram feitas com ajuda de LLM para deixar o código mais correto e menos bugado, corrigindo erros de buffer
+//fgets para ler textos com espaço e strcspn para tirar o \n 
 void lerTexto(const char *mensagem, char *destino, int tamanho) {
     printf("%s", mensagem);
     if (fgets(destino, tamanho, stdin) == NULL) {
@@ -19,7 +21,7 @@ int lerInteiro(const char *mensagem) {
     lerTexto(mensagem, inteiro, sizeof(inteiro));
     return atoi(inteiro);
 }
-
+//função para usar nos menus, garante que as entradas sejam números inteiros e não letras
 int lerOpcao(const char *mensagem) {
     char opt[32];
     char *fim;
@@ -60,7 +62,8 @@ void inserirLivroOrdenado(Biblioteca *b, Livro *novo) {
     novo->prox = atual->prox;
     atual->prox = novo;
 }
-
+//Uso de LLM: para resolver o problema dos IDs sequenciais e a árvore binária ficar totalmente degenerada, tive a ideia de usar números aleatórios
+//pedi ajuda da IA para realizar a implementação no código
 int gerarIdUnico(const Biblioteca *b) {
     int id;
     do {
@@ -88,12 +91,18 @@ void cadastrarLivro(Biblioteca *b) {
         return;
     }
     novo->ano = lerInteiro("Ano de publicação: ");
+    if (novo->ano <= 0) {
+        printf("Ano inválido.\n");
+        free(novo);
+        return;
+    }
 
     novo->id = gerarIdUnico(b);
     novo->status = DISPONIVEL;
     novo->emailEmprestimo[0] = '\0';
     novo->qtdEmprestimos = 0;
     novo->prox = NULL;
+    //adiciona na árvore binária também, como se estivesse preenchendo duas estruturas ao mesmo tempo, a lista encadeada simples e a árvore somente com os IDs
     b->raizIds = inserirId(b->raizIds, novo->id, novo);
     b->qtdLivros++;
     inserirLivroOrdenado(b, novo);
@@ -256,6 +265,19 @@ void consultarEmprestimos(const Biblioteca *b) {
     }
 }
 
+void listarEmprestimos(const Biblioteca *b) {
+    int encontrados = 0;
+    for (const Livro *l = b->livros; l != NULL; l = l->prox) {
+        if (l->status == EMPRESTADO) {
+            exibirLivro(l);
+            encontrados++;
+        }
+    }
+    if (encontrados == 0) {
+        printf("Nenhum livro emprestado no momento.\n");
+    }
+}
+
 void atualizarLivro(Biblioteca *b) {
     int id = lerInteiro("Código do livro a alterar: ");
     Livro *l = buscarLivroID(b, id);
@@ -313,7 +335,7 @@ void atualizarUsuario(Biblioteca *b) {
     strcpy(u->nome, nome);
     printf("Usuário atualizado.\n");
 }
-
+//função auxiliar para a função de excluir usuários
 int usuarioTemLivros(const Biblioteca *b, const char *email) {
     for (const Livro *l = b->livros; l != NULL; l = l->prox) {
         if (l->status == EMPRESTADO && strcmp(l->emailEmprestimo, email) == 0) {
@@ -424,7 +446,7 @@ void devolverLivro(Biblioteca *b) {
     l->emailEmprestimo[0] = '\0';
     printf("Livro \"%s\" devolvido.\n", l->titulo);
 }
-
+//conta quantos livros um usuário tem emprestado naquele momento
 int contarEmprestimosAtivos(const Biblioteca *b, const char *email) {
     int total = 0;
     for (const Livro *l = b->livros; l != NULL; l = l->prox) {
@@ -434,7 +456,7 @@ int contarEmprestimosAtivos(const Biblioteca *b, const char *email) {
     }
     return total;
 }
-
+//percorre todos os livros e salva aquele que foi emprestado mais vezes
 void livroMaisEmprestado(const Biblioteca *b) {
     const Livro *maior = NULL;
     for (const Livro *l = b->livros; l != NULL; l = l->prox) {
@@ -451,12 +473,12 @@ void livroMaisEmprestado(const Biblioteca *b) {
     printf("Livro mais emprestado (%d vezes): ", maior->qtdEmprestimos);
     exibirLivro(maior);
 }
-
+//percorre todos os usuários e salva aquele que tem mais empréstimos no momento
 void usuarioMaisEmprestimos(const Biblioteca *b) {
     const Usuario *melhor = NULL;
     int maior = 0;
     for (const Usuario *u = b->usuarios; u != NULL; u = u->prox) {
-        int qtd = contarEmprestimosAtivos(b, u->email);
+        int qtd = contarEmprestimosAtivos(b, u->email); //vê a quantidade de empréstimos de cada usuário com seu email no momento e guarda o maior
         if (qtd > maior) {
             maior = qtd;
             melhor = u;
@@ -470,7 +492,7 @@ void usuarioMaisEmprestimos(const Biblioteca *b) {
     printf("Usuário com mais empréstimos ativos (%d): ", maior);
     exibirUsuario(melhor);
 }
-
+//imprime as duas funções acima
 void exibirEstatisticas(const Biblioteca *b) {
     printf("\n--- Estatísticas ---\n");
     livroMaisEmprestado(b);
@@ -494,7 +516,7 @@ void liberarBiblioteca(Biblioteca *b) {
     liberarArvore(b->raizIds);
     free(b);
 }
-
+//o extra da árvore binária foi implementada como uma BST comum, mas com o único propósito de guardar os IDs dos livros somente
 NoId *inserirId(NoId *raiz, int id, Livro *livro) {
  if (raiz == NULL) {
         NoId *novo = malloc(sizeof(NoId));
